@@ -1,0 +1,11 @@
+\chapter{September}
+
+\section{Fourth week - 2.sept}
+This week we were handed another task from Anders Hafreager (we have sort of become his staff now, it seems). The task was to translate a existing program written in Fortran to C++, and write the code in a parallal manner. The program is called distance\_to\_atom.cpp. \\
+The idea behind the code:\\
+We divide the system into a given number of voxels, and represent the voxels by a three-dimensional matrix, $\mat{M}$ which will store the distances from the center of the voxels to the nearest atoms. Each process iterates all the atoms, and each atom ``let'' the neighboring voxels know it exists, and if the distance from the atom to voxel is smaller than the distance the voxel already had stored, the new distance is stored in the matrix $\mat{M}$. We initialize the matrix, $\mat{M}$, with a distance equal to half the system size. Since we assume periodic boundaries we know that half the system size is the largest distance we will find. 
+
+As of wednesday, each process have to load all the atoms. This is a lot of data, and completely unnecessary.
+\\ \underline{This weeks product}: Filip and I created the parallel program distance\_to\_atom.cpp. 
+\section{Fifth week - 9.sept}
+\section{Sixth week - 16.sept}

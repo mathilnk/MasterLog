@@ -1,0 +1,18 @@
+\chapter{August}
+
+\section{First week - 12.aug}
+This week I had the first meeting with my supervisor and co-supervisor. We talked about the outlines of my thesis. I am suppose to start with $\text{SiO}_2$ in a glass state, and make spherical, ellipsoidal and cylindrical pores. These pores will be filled with $\text{H}_2\text{O}$. I will do measurements on the water inside the pores, and see how the measurements depend on the curvature of the pore walls. I am not sure what kind of measurements I should do.\\
+Camilla and Anders Hafreager helped me and Filip to get startet, by showing us how we should use the python-wrapper for the fortran code. \\
+\begin{framed}
+\underline{This weeks product}: Used base\_code to generate a $\beta$-cristobalite crystal, warm it up,save states and create xyz-files. The xyz-files are best visualized in VMD.  
+\end{framed}
+\section{Second week - 19.aug}
+I created the C++ file cut\_out\_sphere.cpp. Generally, this program takes the mts0 directory where a state is saved and loads the atoms. Next, it removes the atoms within the wanted pore and saves the new state in a directory defined by the user. cut\_out\_sphere.cpp is not a good name for the program, because the user can choose to cut out cylindrical and ellipsoidal pores as well as the spherical pores. The name should be changed.
+\begin{framed}
+\underline{This weeks product}: The C++ file cut\_out\_sphere.cpp.
+\end{framed}
+\section{Third week - 26.aug}
+Anders Hafreager gave Filip and I the task of making a program that makes a histogram of the number of voxels that contains at least one particle, given different voxel sizes. We first start with the smallest desired voxel size, $v_{min}$, and create a grid that divides our system into voxels of size $v_{min}$. This grid is represented by a, for now, empty three-dimensional matrix, $M$. The next step is to fill this matrix. The idea was to let each element of the matrix be the number of particles contained by the voxel with the same coordinates as the element. This is easily found by iterating all the particles, and for each particle find the coordinates of the voxel it belongs to and increase the corresponding element in the matrix with one. Say the particles position is given by $\vec{r} = [x,y,z]$, then the corresponding voxel has the coordinates $\vec{vox} = [\lfloor \frac{x}{v_{min}}\rfloor, \lfloor \frac{y}{v_{min}}\rfloor, \lfloor \frac{z}{v_{min}}\rfloor]$. The first element of the histogram is made by counting the number of occupied voxels. Now we want to increase the voxel size. For a given voxel size, we use the original matrix $M$ to make a new similar matrix $M_{new}$. $M_{new}$ is made by merging as many neigboring elements in $M$ as we want.\\
+\begin{framed}
+\underline{This weeks product}: Filip and I created the C++ file voxel\_counter.cpp. I have read a little bit differential geoimetry of curves and surfaces. 
+\end{framed}
