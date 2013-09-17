@@ -11,6 +11,11 @@
 \usepackage{url}
 \usepackage{pdflscape}
 \usepackage{rotating}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{epstopdf}
+%\usepackage{subcaption}
 %\usepackage{color}
 %\usepackage[usenames,dvipsnames]{color}
 \usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
@@ -35,6 +40,7 @@
 %\newcommand{\vec}[1]{\vec{#1}}
 \newcommand{\mat}[1]{\mathbf{#1}}
 \newcommand{\matDim}[3]{\mathbf{#1}^{#2\times#3}}
+\newcommand{\mean}[1]{\bar{#1}}
 
 \newcommand{\Var}{\mathrm{Var}}
 \newcommand{\Exp}[1]{\left< #1 \right>}
@@ -50,7 +56,7 @@
 %HEI SVEIS
 
 
-\newcommand{\subfigure}{\subfloat}
+%\newcommand{\subfigure}{\subfloat}
 
 
 %\input{../includes/lst.tex}
@@ -62,6 +68,7 @@
 \titleformat{\subsection}
 {\normalfont\large\bfseries}
 {\color{mydarkpink}\thesubsection}{1em}{}
+
 
 \titleformat{\chapter}[frame]
 {\centering\normalfont\Huge\bfseries}

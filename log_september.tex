@@ -7,11 +7,153 @@ We divide the system into a given number of voxels, and represent the voxels by 
 We initialize the matrix, $\mat{M}$, with a distance equal to half the system size, $L_2$. Since we assume periodic boundaries we know that half the system size is the largest distance we will find (maybe an idea to initialize with max\_distance instead?)\\
 As of wednesday, each process have to load all the atoms. This is a lot of data, and completely unnecessary.\\
 
-On monday I had a meeting with my supervisor, where I asked him to help me set some deadlines. The next thing he wanted me to do, was to passivate my system. This should be done within 2-3 weeks.\\
-On thursday we (Hafreager, Trømborg, Filip, Kjetil, Mathilde) had our first code review. We went through distance\_to\_atom.cpp, and after some name changes and a few bug fixes, the program was approved and included in the master branch of base\_code. My movie\_function branch was also merged with the master branch (mdconfig).
+On monday I had a meeting with my supervisor, where I asked him to help me set some deadlines. The next thing he wanted me to do, was to passivate my system. This should be done within 2-3 weeks. So far I have collected the neighboring atoms for each atom and counted how many oxygen atoms there is in the neighborhood of each silicon atom. I saw that for $\beta$-kristobalite structure there was 3,4 and 5 oxygen atoms in the neighborhood of each silicon atom. I had expected four.\\
+On thursday we (Hafreager, Trømborg, Filip, Kjetil, Mathilde) had our first code review. We went through distance\_to\_atom.cpp, and after some name changes and a few bug fixes, the program was approved and included in the master branch of base\_code. My movie\_function branch was also merged with the master branch (mdconfig).\\
+
+On friday I decided upon a template on how I should structure my directories and projects. I now have four main folders:\\
+MasterLog, MasterResults, MasterSourceCode, MasterThesis. \\
+Rules:\\
+\begin{itemize}
+ \item Everything made up until now is in ExampleProjects.
+ \item Start a new project called ``NewProject'' - Create a folder called NewProject and copy the latest version of base\_code in here (just the content, not the folder).
+ \item All projects should have these two folders: NewProject/xyzFiles/ and NewProject/States/.
+ \item When developing new functionality that should eventually go into base\_code - create a folder in MasterSourceCode/NewFunctionality/ called NewFuncNameOfNewFunc. Copy base\_code into this folder, and start developing. When the code is ready you create a new branch in Anders' git-folder. This branch will be merged in after code review.
+ \item If a state is to be used as a starting point for other projects, the state should be copied into the folder MasterSourceCode/UsefulStates/ and extracted from here.
+\end{itemize}
+
 \begin{framed}
 \underline{This weeks product}:\\
-Filip and I created the parallel program distance\_to\_atom.cpp. The master log was created. Had our first code review.
+Filip and I created the parallel program distance\_to\_atom.cpp. The master log was created. Had our first code review. Created template for projects. 
 \end{framed}
 \section{Fifth week - 9.sept}
+\subsection{The radial distribution function g(r)}
+Let's assume our system consists of N particles, and we have chosen an arbitrary particle which we label $a$. The distribution of densities as a function of distance r from particle $a$ is what we call the radial distribution function. To get a better picture of what this means, we place imaginary, thin spherical shells around our particle, see figure \ref{thin_shells}. The radial distribution function is proportional to the time-average density, $\rho(r)$,  of the shell at distance $r$ from particle $a$. We find $\rho(r)$ by counting the average number of particles inside the shell and divide by the shell-volume.
+\begin{align}
+ g(r) \propto \rho(r) = \frac{\mean{N}(r)}{V_{shell}(r)} = \frac{3\mean{N}}{4\pi[(r+dr)^3-r^3]}
+\end{align}
+
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=\textwidth]{./figures/particle_with_thin_spheres.pdf}
+ % particle_with_thin_spheres.svg: 567x283 pixel, 72dpi, 20.00x9.98 cm, bb=0 0 567 283
+ \caption{This figure illustrate the idea behind the radial distribution function, g(r). Here we have chosen an arbitrary particle in the system, and placed imaginary spherical shells. The radial distribution function for distance r is the density of the greyed out area when we take the limit $\Delta r \rightarrow 0$.}
+ \label{thin_shells}
+\end{figure}
+
+
+To find g(r) for a particular system, we run through all pairs of particles and make a time-averaged histogram of the distances between them. The radial distribution function is often called pair correlation function, because we count how often a pair of particles have the distance r between them.\\
+In program/calculate\_radial\_distribution/calculate\_radial\_distribution.cpp we find the radial distribution at a chosen timestep. It divides the range of radii into bins, and count how many particle pairs that has a distance between them that corresponds to the different bins. The program includes all types of particles in this calculation, but also deliveres a distribution that only uses pairs of atom types chosen by the user. In our system we can look at distribution from pairs of silicon particles, pairs of oxygen particles, or a distribution from pairs where one of the particles is silicon and the other oxygen.
+\subsection{g(r) for a perfect crystal}
+In our simulations of silica we often start out with a system with crystal structure of type $\alpha$-cristobalite. TODO:figur. Figure \ref{g_r_all} shows the radiational distribution including all atoms in the system. Figure \ref{g_r_SiO} shows the radiational distribution for silicon-oxygen pairs. Figure \ref{g_r_SiSi} shows the radiational distribution for silicon-oxygen pairs. 
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=13 cm]{../MasterResults/Crystal/radial_distribution_216_units_1000_bins_TYPE_all_atoms.pdf}
+ % radial_distribution_216_units_100_bins_TYPE_all_atoms.png: 812x612 pixel, 100dpi, 20.62x15.54 cm, bb=0 0 585 441
+ \caption{The radial distribution function for a silicate system with $\alpha$-cristobalite structure.}
+ \label{g_r_all}
+\end{figure}
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=13 cm]{../MasterResults/Crystal/radial_distribution_216_units_1000_bins_TYPE_SiO.pdf}
+ % radial_distribution_216_units_100_bins_TYPE_SiO.png: 812x612 pixel, 100dpi, 20.62x15.54 cm, bb=0 0 585 441
+ \caption{The radial distribution function for silicon-oxygen pairs, for a silicat system with $\alpha$-cristobalite structure.}
+ \label{g_r_SiO}
+\end{figure}
+
+\begin{figure}[H]
+ \centering
+ \includegraphics[width=13 cm]{../MasterResults/Crystal/radial_distribution_216_units_1000_bins_TYPE_SiSi.pdf}
+ % radial_distribution_216_units_100_bins_TYPE_SiO.png: 812x612 pixel, 100dpi, 20.62x15.54 cm, bb=0 0 585 441
+ \caption{The radial distribution function for silicon-silicon pairs, for a silicat system with $\alpha$-cristobalite structure at a given time step.}
+ \label{g_r_SiSi}
+\end{figure}
+
+\subsection{Experiment  - g(r) for a crystal, a heated system and an amorph cool system}
+\begin{itemize}
+ \item Start with a crystal - quadratic with 216 unit cells (TODO:Finn hvor mange partikler)
+ \item Let the system evolve in time for 10000 time steps with $\Delta t = $(TODO:finn ut hvor stor dt). Measure g(r) every 1000 timestep, and find the average of these ten measurements. See figure \ref{g_r_crystal_10}
+ \item Heat the system to 4500 K. This is done in ten steps, where the temperature is increased linearly for each step until we finally arrive at a temperature of T = 4500
+      \begin{description}
+      \item[1.] Set the temperature on the thermostat to T = 290. Run with thermostat for 2000 time steps. Thermalize for 10000 time steps. Repeat once.
+      \item[2.] Set the temperature on the thermostat to T = 711. Run with thermostat for 2000 time steps. Thermalize for 10000 time steps. Repeat once.
+      \item[...] 
+      \item[10.] Set the temperature on the thermostat to T = 4500. Run with thermostat for 2000 time steps. Thermalize for 10000 time steps. Repeat once.
+      \end{description}
+      To be sure, we thermalize the system another 10000 time steps before we do measurements.
+\item Let the heated system evolve in time for 10000 time steps and measure g(r) every 1000 time step. We find the average of these ten measurements as our g(r). See figure \ref{g_r_T4500_10}
+\item Cool down the system to 290 K in the same manner as when heating it up. It is done in ten steps, where the temperature is decreased linearly for each step until we arrive at temperature T=290.
+      \begin{description}
+      \item[1.] Set the temperature on the thermostat to T = 4079. Run with thermostat for 2000 time steps. Thermalize for 10000 time steps. Repeat once.
+      \item[2.] Set the temperature on the thermostat to T = 3658. Run with thermostat for 2000 time steps. Thermalize for 10000 time steps. Repeat once.
+      \item[...] 
+      \item[10.] Set the temperature on the thermostat to T = 290. Run with thermostat for 2000 time steps. Thermalize for 10000 time steps. Repeat once.
+      \end{description}
+      To be sure, we thermalize the system another 10000 time steps before we do measurements.
+\item Let the cooled system evolve in time for 10000 time steps and measure g(r) every 1000 time step. We find the average of these ten measurements as our g(r). See figure \ref{g_r_T290_10}
+\end{itemize}
+
+
+
+
+
+TODO: Lag finere figurer: større tekst og  norske tegn. punkter på grafen. Matlab?
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../MasterResults/Measure_g_r/matlab_crystal_radial_distribution_216_units_1000_bins_TYPE_all_atoms_AVR_10.eps}
+    This distribution is made up of all atom types. We count for Si-Si, Si-O, O-O in this plot. 
+  \end{minipage}
+  \hspace{0.5cm}
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../MasterResults/Measure_g_r/matlab_crystal_radial_distribution_216_units_1000_bins_TYPE_SiO_AVR_10.eps}
+    This distribution is made of atom pairs of type Si-O.
+  \end{minipage} \\[0.4cm]
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../MasterResults/Measure_g_r/matlab_crystal_radial_distribution_216_units_1000_bins_TYPE_SiSi_AVR_10.pdf}
+    This distribution is made of atom pairs of type Si-Si.
+  \end{minipage}
+  \hspace{0.5cm}
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../MasterResults/Measure_g_r/matlab_crystal_radial_distribution_216_units_1000_bins_TYPE_OO_AVR_10.pdf}
+    This distribution is made of atom pairs of type O-O.
+  \end{minipage} %\\[0.4cm]
+  \caption{The radial distributions for different type of atom pairs. The distribution is collected from a crystal.}
+  \label{g_r_crystal_10}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../MasterResults/Measure_g_r/T4500_radial_distribution_216_units_1000_bins_TYPE_all_atoms_AVR_10.pdf}
+    This distribution is made up of all atom types. We count for Si-Si, Si-O, O-O in this plot.
+  \end{minipage}
+  \hspace{0.5cm}
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../MasterResults/Measure_g_r/T4500_radial_distribution_216_units_1000_bins_TYPE_SiO_AVR_10.pdf}
+    This distribution is made of atom pairs of type Si-O.
+  \end{minipage} \\[0.4cm]
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../MasterResults/Measure_g_r/T4500_radial_distribution_216_units_1000_bins_TYPE_SiSi_AVR_10.pdf}
+    This distribution is made of atom pairs of type Si-Si.
+  \end{minipage}
+  \hspace{0.5cm}
+  \begin{minipage}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{../MasterResults/Measure_g_r/T4500_radial_distribution_216_units_1000_bins_TYPE_OO_AVR_10.pdf}
+    This distribution is made of atom pairs of type O-O.
+  \end{minipage} %\\[0.4cm]
+  \caption{The radial distributions for different type of atom pairs. The distribution is collected from a system with a high temperature (T=4500 K).}
+  \label{g_r_T4500_10}
+\end{figure}
+
 \section{Sixth week - 16.sept}
